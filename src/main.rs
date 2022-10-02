@@ -45,8 +45,13 @@ fn watch<P: AsRef<Path>>(path: P) -> notify::Result<()> {
     } else {
       watcher.watch(path.as_ref(), RecursiveMode::NonRecursive)?;
     }
+    let mut folder_history = vec![];
 
     for res in rx {
+      if folder_history.len() > 50 {
+        let folder_history_safe_length = folder_history.len().saturating_sub(50);
+        folder_history.truncate(folder_history_safe_length);
+      }
       match res {
         Ok(event) => {
           match event.kind {
@@ -55,8 +60,11 @@ fn watch<P: AsRef<Path>>(path: P) -> notify::Result<()> {
               post(event.paths[0].display().to_string(), "file".to_string()); 
             }
             EventKind::Create(CreateKind::Folder) => {
-              println!("new folder: {} ", event.paths[0].display().to_string());  
-              post(event.paths[0].display().to_string(), "folder".to_string());
+              if !folder_history.contains(&event.paths[0].display().to_string()){
+                println!("new folder: {} ", event.paths[0].display().to_string());  
+                post(event.paths[0].display().to_string(), "folder".to_string());
+                folder_history.push(event.paths[0].display().to_string());
+              }
             }
             _ => { /* something else changed */ }
           }
