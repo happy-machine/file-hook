@@ -13,8 +13,8 @@ To run:
 
 #### Environment variables
 
-**ENDPOINT**="https://apimocha.com/test/example"
+**ENDPOINT**="https://apimocha.com/test/example"  
 Endpoint to sent REST request to on file/folder arrival.
 
-**REQUEST_SENSOR_PATH**="/Users/me/files-to-watch"
+**REQUEST_SENSOR_PATH**="/Users/me/files-to-watch"  
 Folder to watch for new files/folders.
