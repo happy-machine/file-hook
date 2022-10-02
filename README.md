@@ -6,7 +6,7 @@ Very lightweight Rust webhook for notifications on creation of files / folders.
 
 ### What is file-hook?
 
-file-hook will wait indefinetely and send a request to a specified endpoint for every file or folder recieved, this will contain a key with either a value of 'file' or 'folder' and value of corresponding name. It's fast and lightweight so you can leave it running as a background task or in a persistent container.
+file-hook will wait indefinetely and send a request to a specified endpoint for every file or folder recieved, this will contain a key of 'file' or 'folder' and value of corresponding name. It's fast and lightweight so you can leave it running as a background task or in a persistent container.
 
 ### How to use
 
