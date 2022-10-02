@@ -22,3 +22,6 @@ Endpoint to sent REST request to on file/folder arrival.
 
 **REQUEST_SENSOR_PATH**="/Users/me/files-to-watch"  
 Folder to watch for new files/folders.
+
+**RECURSIVE_MODE**=True  
+Notify of recursive events (events inside folders recursively), defaults to false

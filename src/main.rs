@@ -28,16 +28,24 @@ fn post(full_path:String, type_string:String) -> Result<(), Box<dyn Error>> {
 
 fn main() {
   let REQUEST_SENSOR_PATH =
-  env::var("REQUEST_SENSOR_PATH").unwrap_or("./".to_string());
+    env::var("REQUEST_SENSOR_PATH").unwrap_or("./".to_string());
   if let Err(e) = watch(REQUEST_SENSOR_PATH) {
       println!("error: {:?}", e)
   }
 }
 
 fn watch<P: AsRef<Path>>(path: P) -> notify::Result<()> {
+    let RECURSIVE_MODE =
+    env::var("RECURSIVE_MODE").unwrap_or("false".to_string());
+    let recursive_mode: bool = RECURSIVE_MODE.parse().unwrap();
     let (tx, rx) = std::sync::mpsc::channel();
     let mut watcher = RecommendedWatcher::new(tx, Config::default())?;
-    watcher.watch(path.as_ref(), RecursiveMode::Recursive)?;
+    if recursive_mode {
+      watcher.watch(path.as_ref(), RecursiveMode::Recursive)?;
+    } else {
+      watcher.watch(path.as_ref(), RecursiveMode::NonRecursive)?;
+    }
+
     for res in rx {
       match res {
         Ok(event) => {
