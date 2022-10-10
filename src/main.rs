@@ -7,40 +7,37 @@ use notify::{
 };
 
 use std::error::Error;
-use std::env;
 use std::collections::HashMap;
 use std::{path::Path, path::PathBuf};
 
+mod config;
+
 fn post(full_path:String, type_string:String) -> Result<(), Box<dyn Error>> {
-  let mut ENDPOINT: String = "".to_string();
-  ENDPOINT = env::var("ENDPOINT").expect("\nPlease set ENDPOINT environment variable to the endpoint you want to recieve file and folder names.\nTo set, execute \'export ENDPOINT=\"myapi.com/ExamplefileSensorEndpoint\"\'\n");
+  let env = config::constants::get_env();
   let path = PathBuf::from(full_path);
   let target = path.file_name().unwrap();
   let mut map = HashMap::new();
   map.insert("path", target.to_str().unwrap());
   map.insert("type", &type_string);
   let client = reqwest::blocking::Client::new();
-  let _res = client.post(ENDPOINT)
+  let _res = client.post(env.endpoint)
       .json(&map)
       .send();
   Ok(())
 }
 
 fn main() {
-  let REQUEST_SENSOR_PATH =
-    env::var("REQUEST_SENSOR_PATH").unwrap_or("./".to_string());
-  if let Err(e) = watch(REQUEST_SENSOR_PATH) {
+  let env = config::constants::get_env();
+  if let Err(e) = watch(env.request_sensor_path) {
       println!("error: {:?}", e)
   }
 }
 
 fn watch<P: AsRef<Path>>(path: P) -> notify::Result<()> {
-    let RECURSIVE_MODE =
-    env::var("RECURSIVE_MODE").unwrap_or("false".to_string());
-    let recursive_mode: bool = RECURSIVE_MODE.parse().unwrap();
+    let env = config::constants::get_env();
     let (tx, rx) = std::sync::mpsc::channel();
     let mut watcher = RecommendedWatcher::new(tx, Config::default())?;
-    if recursive_mode {
+    if env.recursive_mode {
       watcher.watch(path.as_ref(), RecursiveMode::Recursive)?;
     } else {
       watcher.watch(path.as_ref(), RecursiveMode::NonRecursive)?;
